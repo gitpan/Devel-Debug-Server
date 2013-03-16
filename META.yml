@@ -1,0 +1,28 @@
+---
+abstract: 'communication module for debuging processes'
+author:
+  - 'Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>'
+build_requires:
+  FindBin: 0
+  Proc::Background: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.30
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.300030, CPAN::Meta::Converter version 2.120921'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Devel-Debug-Server
+requires:
+  Data::Dumper: 0
+  Devel::ebug: 0
+  File::Spec: 0
+  JSON: 0
+  Storable: 0
+  Time::HiRes: 0
+  ZeroMQ: 0
+  strict: 0
+  warnings: 0
+version: 0.001
