@@ -33,6 +33,7 @@ my %files = ();
 my $breakPointVersion = 0;
 my $breakPoints = {}; #all the requested breakpoints
 my $effectiveBreakpoints = {}; #all the breakpoints effectively set, with their real line number
+my $lastBreakPointsUpdate = 0; #the last breakpoint list version that was propagate
 
 =head2  updateProcessInfo
 
@@ -81,6 +82,7 @@ C<setRunningProcessInfo($pid);>
 update the process info when we send the 'continue' command because the process won't update its status until it id finished or it reached a breakpoint
 
 =cut
+
 sub setRunningProcessInfo {
     my ($pid) = @_;
     my $processInfo = $processesInfos{$pid};
@@ -101,6 +103,7 @@ sub setRunningProcessInfo {
         breakPointVersion => $processInfo->{breakPointVersion},
         lastEvalCommand => '',
         lastEvalResult => '',
+       lastUpdateTime  => [Time::HiRes::gettimeofday()],
     };
     $processesInfos{$pid} = $programInfo;
 }
@@ -144,6 +147,16 @@ sub setBreakPoint{
     $breakPoints->{$file}{$lineNumber} = 1;#condition always true for now
 }
 
+
+#suspend process identified with $pid
+sub suspend{
+    my ($pid)=@_;
+
+    if ($processesInfos{$pid}{halted} == 0){
+        my $processSignaled = kill ( 2 => $pid); #send SIGINT to force process to halt 
+    }
+}
+
 sub removeBreakPoint{
     my ($command)=@_;
     my $file = $command->{arg1};
@@ -155,6 +168,13 @@ sub removeBreakPoint{
     }
 }
 
+sub trace($){
+    my ($text)=@_;
+    open (my $fh,">>","./trace.log");
+    $text = "[$$]".$text."\n";
+    print $fh $text;
+    close $fh;
+}
 
 sub updateEffectiveBreakpoints{
     my ($effectiveBreakpointsList) = @_;
@@ -174,9 +194,51 @@ sub updateEffectiveBreakpoints{
     }
 }
 
+my $lastProcessCheck = [Time::HiRes::gettimeofday()];
+sub checkProcessAlive(){
+    if (Time::HiRes::tv_interval ( $lastProcessCheck)< 1){
+        return; #nothing to do for now
+    }
+
+    foreach my $pid (keys %processesInfos){
+        if (Time::HiRes::tv_interval ($processesInfos{$pid}{lastUpdateTime}) > 1.5 ){
+             my $processSignaled = kill ( 0 => $pid); #send no signal to check process alive
+             if ($processSignaled){
+                $processesInfos{$pid}{lastUpdateTime} = [Time::HiRes::gettimeofday()];
+             }
+         }
+    }
+    $lastProcessCheck = [Time::HiRes::gettimeofday()];
+}
+
+=head2  propagateBreakPoints
+
+propagate new breakpoints to all processes; running processes are interrupted so they update their breakpoints.
+
+=cut
+sub propagateBreakPoints {
+    if ($lastBreakPointsUpdate == $breakPointVersion){
+        return;
+    }
+    foreach my $pid (keys %processesInfos){
+        if ($processesInfos{$pid}{breakPointVersion} != $lastBreakPointsUpdate
+         && $processesInfos{$pid}{halted} == 0){
+             $commands{$pid} = { command => $Devel::Debug::Server::RUN_COMMAND };
+             my $processSignaled = kill ( 2 => $pid); #send SIGINT to force breakpoints refresh
+             if ($processSignaled){
+                $processesInfos{$pid}{lastUpdateTime} = [Time::HiRes::gettimeofday()];
+             }
+         }
+    }
+    $lastBreakPointsUpdate = $breakPointVersion;
+}
+
+
+#The main loop
 while (1) {
     # Wait for the next request from client
     my $message = $responder->recv();
+
     if (defined $message){
         my $requestStr = $message->data();
         my $request = Storable::thaw($requestStr);
@@ -206,6 +268,9 @@ while (1) {
                 }elsif ($command->{command} 
                     eq $Devel::Debug::Server::REMOVE_BREAKPOINT_COMMAND){
                     removeBreakPoint($command);
+                }elsif ($command->{command} 
+                    eq $Devel::Debug::Server::SUSPEND_COMMAND){
+                    suspend($pid);
 
                 }elsif(!defined $commands{$pid}){
                     $commands{$pid} = $command;
@@ -222,8 +287,12 @@ while (1) {
 
         # Send reply back to client
         $responder->send(Storable::freeze($messageToSend));
+
+        propagateBreakPoints();
+        checkProcessAlive();
     }else{
         usleep(500);
     }
 
 }
+

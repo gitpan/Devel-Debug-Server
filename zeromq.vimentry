@@ -1,6 +1,6 @@
 -- auto-gen settings (DO NOT MODIFY) --
 
-CWD=/home/jeanpat/dev/zeroMQ/Devel-Debug-ZeroMQ
+CWD=/home/jeanpat/dev/zeroMQ/Devel-Debug-Server
 Version=24
 VimEntryName=zeromq
 VimfilesDirName=.vimfiles.zeromq

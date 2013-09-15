@@ -3,8 +3,8 @@ MANIFEST
 META.yml
 Makefile.PL
 README
+bin/debugAgent.pl
 bin/debugServer.pl
-bin/debugZeroMq.pl
 dist.ini
 lib/Devel/Debug/Server.pm
 lib/Devel/Debug/Server/Agent.pm
@@ -12,6 +12,11 @@ lib/Devel/Debug/Server/Client.pm
 lib/Devel/Debug/Server/Server.pm
 quick_gen_project_zeromq_autogen.sh
 t/01-debug-script.t
+t/02-breakPointFileLoad.t
+t/Calc.pm
 t/bin/scriptToDebug.pl
+t/load_calc.pl
 t/release-portability.t
+trace.log
+traceServer.log
 zeromq.vimentry

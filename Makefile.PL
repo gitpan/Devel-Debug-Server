@@ -12,16 +12,18 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "communication module for debuging processes",
   "AUTHOR" => "Jean-Christian HASSLER <hasslerjeanchristian\@gmail.com>",
   "BUILD_REQUIRES" => {
+    "Class::Accessor::Chained::Fast" => 0,
     "FindBin" => 0,
     "Proc::Background" => 0,
-    "Test::More" => 0
+    "Test::More" => 0,
+    "base" => 0
   },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
   "DISTNAME" => "Devel-Debug-Server",
   "EXE_FILES" => [
-    "bin/debugZeroMq.pl",
+    "bin/debugAgent.pl",
     "bin/debugServer.pl"
   ],
   "LICENSE" => "perl",
@@ -37,7 +39,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.003",
+  "VERSION" => "0.004",
   "test" => {
     "TESTS" => "t/*.t"
   }
