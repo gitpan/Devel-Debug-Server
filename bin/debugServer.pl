@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -10,6 +11,10 @@ use Storable;
 use Devel::Debug::Server;
 use JSON;
 use File::Spec;
+
+# PODNAME: debugServer.pl
+
+# ABSTRACT: The server to centralize debugging informations
 
 
 my $cxt = ZeroMQ::Context->new;
@@ -35,24 +40,6 @@ my $breakPoints = {}; #all the requested breakpoints
 my $effectiveBreakpoints = {}; #all the breakpoints effectively set, with their real line number
 my $lastBreakPointsUpdate = 0; #the last breakpoint list version that was propagate
 
-=head2  updateProcessInfo
-
-    Update informations of the process into the process table
-
-     my $programInfo = { 
-        pid          
-        name         
-        line         
-        subroutine   
-        package      
-        filename     
-        finished    
-        stackTrace   
-        variables    
-        result       
-
-    };
-=cut
 sub updateProcessInfo {
     my ($infos) = @_;
 
@@ -76,12 +63,6 @@ sub updateProcessInfo {
     return $pid;
 }
 
-=head2  setRunningProcessInfo
-
-C<setRunningProcessInfo($pid);>
-update the process info when we send the 'continue' command because the process won't update its status until it id finished or it reached a breakpoint
-
-=cut
 
 sub setRunningProcessInfo {
     my ($pid) = @_;
@@ -108,11 +89,6 @@ sub setRunningProcessInfo {
     $processesInfos{$pid} = $programInfo;
 }
 
-=head2  getDebuggingInfos
-
-return a hash containg all debugging info + details for $pid
-
-=cut
 sub getDebuggingInfos {
     my ($pid) = @_;
     
@@ -211,11 +187,6 @@ sub checkProcessAlive(){
     $lastProcessCheck = [Time::HiRes::gettimeofday()];
 }
 
-=head2  propagateBreakPoints
-
-propagate new breakpoints to all processes; running processes are interrupted so they update their breakpoints.
-
-=cut
 sub propagateBreakPoints {
     if ($lastBreakPointsUpdate == $breakPointVersion){
         return;
@@ -235,6 +206,8 @@ sub propagateBreakPoints {
 
 
 #The main loop
+print "server is started...\n";
+
 while (1) {
     # Wait for the next request from client
     my $message = $responder->recv();
@@ -296,3 +269,58 @@ while (1) {
 
 }
 
+__END__
+
+=pod
+
+=head1 NAME
+
+debugServer.pl - The server to centralize debugging informations
+
+=head1 VERSION
+
+version 0.005
+
+=head2 updateProcessInfo
+
+    Update informations of the process into the process table
+
+     my $programInfo = { 
+        pid          
+        name         
+        line         
+        subroutine   
+        package      
+        filename     
+        finished    
+        stackTrace   
+        variables    
+        result       
+
+    };
+
+=head2 setRunningProcessInfo
+
+C<setRunningProcessInfo($pid);>
+update the process info when we send the 'continue' command because the process won't update its status until it id finished or it reached a breakpoint
+
+=head2 getDebuggingInfos
+
+return a hash containg all debugging info + details for $pid
+
+=head2 propagateBreakPoints
+
+propagate new breakpoints to all processes; running processes are interrupted so they update their breakpoints.
+
+=head1 AUTHOR
+
+Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Jean-Christian HASSLER.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

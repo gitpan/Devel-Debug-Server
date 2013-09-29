@@ -32,7 +32,6 @@ sub updateBreakPoints {
     if ($breakPointsServerVersion == $breakPointsVersion){
         return; #first check if there were no modification since last time
     }
-    trace("debug MAJ Bk!!");
 
     $breakPointsVersion = $breakPointsServerVersion;
     my @breakPoints = $ebug->all_break_points_with_condition();
@@ -44,8 +43,6 @@ sub updateBreakPoints {
         #suppress all breakpoints already set but no more needed
         if (!(exists $breakPointsList->{$file} 
             && exists $breakPointsList->{$file}{$line})){
-    trace("supprime!!");
-    trace("bkPt :" .Dumper( $breakPoint));
             $ebug->break_point_delete($file,$line);
         }
     }
@@ -86,7 +83,6 @@ sub setDelayedBreakPoints {
     my $fileBreakPoints = $breakPointsToSet{$file};
     my $bkPointList = setBreakPointForFile($file,keys %{$fileBreakPoints});
     delete $breakPointsToSet{$file};
-    trace("Delayd bk :" .Dumper( $bkPointList));
     sendBreakPointsInfo($bkPointList);
     return 1;
 }
@@ -96,7 +92,6 @@ sub setBreakPointForFile($$){
     my $effectiveBreakpointList = [];
     foreach my $line (@line) {
         my $effectiveLineNumber = $ebug->break_point($file,$line);
-    trace("ajout!! [$file|$line]");
         if (defined $effectiveLineNumber){
             push (@{$effectiveBreakpointList} ,
                 {   file => $file, 
@@ -125,11 +120,6 @@ sub init{
     Devel::Debug::Server::initZeroMQ();
 }
 
-=head2  run
-
-run the program until next breakpoint.
-
-=cut
 sub run {
    #no params
    my $continueRunning = 1;
@@ -140,11 +130,6 @@ sub run {
 
 }
 
-=head2  loop
-
-Start the inifinite loop to communicate with the debug server
-
-=cut
 sub loop {
     my($progName) = @_;
     
@@ -215,11 +200,6 @@ sub loop {
     }
 }
 
-=head2  clearEvalResult
-
-clear the last 'eval' command result (usefull when the program continues)
-
-=cut
 sub clearEvalResult {
     $lastEvalCommand = '';
     $lastEvalResult  = '';
@@ -266,3 +246,40 @@ sub sendAgentInfos {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Devel::Debug::Server::Agent
+
+=head1 VERSION
+
+version 0.005
+
+=head2 run
+
+run the program until next breakpoint.
+
+=head2 loop
+
+Start the inifinite loop to communicate with the debug server
+
+=head2 clearEvalResult
+
+clear the last 'eval' command result (usefull when the program continues)
+
+=head1 AUTHOR
+
+Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Jean-Christian HASSLER.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
