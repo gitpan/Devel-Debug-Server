@@ -257,7 +257,7 @@ Devel::Debug::Server::Agent
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head2 run
 
