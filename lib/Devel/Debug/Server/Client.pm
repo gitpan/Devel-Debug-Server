@@ -99,7 +99,7 @@ Client module - the client module for the GUI or CLI client
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head2 refreshData
 

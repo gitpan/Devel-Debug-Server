@@ -56,7 +56,7 @@ Devel::Debug::Server - communication module for debuging processes
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
