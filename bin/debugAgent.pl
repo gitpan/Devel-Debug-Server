@@ -10,6 +10,8 @@ use Devel::Debug::Server::Agent;
 my $commandToLaunch = join(' ',@ARGV);
 Devel::Debug::Server::Agent::loop($commandToLaunch);
 
+1;
+
 __END__
 
 =pod
@@ -20,9 +22,9 @@ debugAgent.pl - The devel::Debug agent
 
 =head1 VERSION
 
-version 1.000
+version 1.001
 
-=head1 synopsis
+=head1 SYNOPSIS
 
 	#on command-line
 	
@@ -42,7 +44,7 @@ version 1.000
 	
 	#now you can send debug commands with the devel::debug::server::client module
 
-=head1 description
+=head1 DESCRIPTION
 
 to debug a perl script, simply start the server and launch the script with debugagent.pl.
 

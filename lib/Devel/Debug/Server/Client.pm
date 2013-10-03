@@ -114,7 +114,7 @@ Client module - the client module for the GUI or CLI client
 
 =head1 VERSION
 
-version 1.000
+version 1.001
 
 =head1 METHODS
 

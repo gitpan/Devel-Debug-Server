@@ -257,7 +257,7 @@ Devel::Debug::Server::Agent
 
 =head1 VERSION
 
-version 1.000
+version 1.001
 
 =head2 run
 
