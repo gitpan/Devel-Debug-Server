@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker 6.30;
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "communication module for debuging processes",
-  "AUTHOR" => "Jean-Christian HASSLER <hasslerjeanchristian\@gmail.com>",
+  "AUTHOR" => "Jean-Christian HASSLER <hasslerjeanchristian at gmail.com>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
@@ -41,7 +41,7 @@ my %WriteMakefileArgs = (
     "base" => 0,
     "lib" => 0
   },
-  "VERSION" => "0.007",
+  "VERSION" => "1.000",
   "test" => {
     "TESTS" => "t/*.t"
   }

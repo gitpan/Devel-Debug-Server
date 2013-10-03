@@ -1,7 +1,7 @@
 ---
 abstract: 'communication module for debuging processes'
 author:
-  - 'Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>'
+  - 'Jean-Christian HASSLER <hasslerjeanchristian at gmail.com>'
 build_requires:
   Class::Accessor::Chained::Fast: 0
   FindBin: 0
@@ -28,4 +28,4 @@ requires:
   ZeroMQ: 0
   strict: 0
   warnings: 0
-version: 0.007
+version: 1.000

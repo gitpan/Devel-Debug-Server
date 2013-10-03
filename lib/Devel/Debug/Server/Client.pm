@@ -8,6 +8,8 @@ use Devel::Debug::Server;
 
 # ABSTRACT: the client module for the GUI or CLI client
 
+
+
 sub refreshData {
 
     my $req = { type => $Devel::Debug::Server::DEBUG_GUI_TYPE
@@ -15,6 +17,19 @@ sub refreshData {
     return sendCommand($req); #we just send a void command
 }
 
+
+#Send a command to the debug server to process whose pid is $pid. 
+#This method shouldn't be used directly. 
+#Returns the debug informations of the server.
+
+#The command is of the form:
+#    
+#            {
+#            command => $commandCode,
+#            arg1 => $firstArg, #if needed
+#            arg2 => $secondArg,#if needed
+#            arg3 => $thirdArg,#if needed
+#            };
 sub sendCommand {
     my($pid,$command)= @_;
     
@@ -99,24 +114,59 @@ Client module - the client module for the GUI or CLI client
 
 =head1 VERSION
 
-version 0.007
+version 1.000
+
+=head1 METHODS
 
 =head2 refreshData
 
-return all data necessary to display screen
+return all data necessary to display a debugger screen.
+This contains :
 
-=head2 sendCommand
+* the breakpoints list ('effectiveBreakpoints' key)
 
-send a command to the debug server to process whose pid is $pid. 
-Returns the debug informations of the server.
-The command is of the form:
+* the informations for all processe ('processesInfo' key)
 
-            {
-            command => $commandCode,
-            arg1 => $firstArg, #if needed
-            arg2 => $secondArg,#if needed
-            arg3 => $thirdArg,#if needed
-            };
+An exemple data structure will be as follows :
+
+  HASH
+   'effectiveBreakpoints' => HASH
+      '/path/to/my/source/file.pl' => HASH  #here are the breakpoints for this file
+         11 => 13
+         13 => 13
+         9 => 9
+   'processesInfo' => HASH
+      8603 => HASH      #below are the informations for process 9603
+         'fileContent' => ARRAY  #here is the source code of current file
+            0  'use strict;'
+            1  'use warnings;'
+            2  'use Time::HiRes qw(usleep nanosleep);'
+            3  ''
+            4  '#this dummy script is just a test program to manipulate with the debugger'
+            5  ''
+            6  'sub dummySubroutine($){'
+            7  '    my ($value) = @_;'
+            8  '    return $value++;'
+            9  '}'
+         'fileName' => '/path/to/my/scriptToDebug.pl' #name of current source file
+         'finished' => 0  #if 1, program is finished
+         'halted' => 1    #if 1, program is haltes, can set brekpoints 
+                          #or inspect variables
+         'lastEvalCommand' => '' #last command that was executed with "eval"
+         'lastEvalResult' => ''  #result of the last "eval" command
+         'line' => 13            #current line in the source file
+         'name' => undef
+         'package' => 'main'     #current package name
+         'pid' => 8603           #pid
+         'result' => undef      
+         'stackTrace' => ARRAY   #stack trace
+              empty array
+         'subroutine' => 'main'  #subroutine name
+         'variables' => HASH     #variables list
+              empty hash
+      8607 => HASH               "and so on for next process..."
+         'fileContent' => ARRAY
+            ....
 
 =head2 step
 
@@ -125,7 +175,7 @@ Return the debug informations
 
 =head2 breakpoint
 
-breakpoint($file,$line) : set breakpoint 
+breakpoint($file,$line) : set breakpoint in $file at $line
 
 =head2 removeBreakPoint
 
@@ -145,11 +195,15 @@ return($pid,$returnedValue) : cause script of pid $pid to return of current subr
 
 =head2 eval
 
-eval($pid,$expression) : eval perl code contained into $expression in the script of pid $pid and returns the result
+eval($pid,$expression) : eval perl code contained into $expression in the script of pid $pid. The result will be send later into the C<lastEvalResult> key of the data structure of refreshDate
+
+=head1 SEE ALSO
+
+L<Devel::Debug::Server>
 
 =head1 AUTHOR
 
-Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>
+Jean-Christian HASSLER <hasslerjeanchristian at gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

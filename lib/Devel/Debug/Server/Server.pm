@@ -18,11 +18,11 @@ server module - the server module
 
 =head1 VERSION
 
-version 0.007
+version 1.000
 
 =head1 AUTHOR
 
-Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>
+Jean-Christian HASSLER <hasslerjeanchristian at gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

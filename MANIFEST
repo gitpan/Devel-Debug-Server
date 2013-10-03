@@ -1,3 +1,4 @@
+CHANGES
 LICENSE
 MANIFEST
 META.yml
@@ -10,6 +11,8 @@ lib/Devel/Debug/Server.pm
 lib/Devel/Debug/Server/Agent.pm
 lib/Devel/Debug/Server/Client.pm
 lib/Devel/Debug/Server/Server.pm
+pod2htmd.tmp
+pod2htmi.tmp
 quick_gen_project_zeromq_autogen.sh
 t/01-debug-script.t
 t/02-breakPointFileLoad.t
@@ -17,6 +20,3 @@ t/Calc.pm
 t/bin/scriptToDebug.pl
 t/load_calc.pl
 t/release-portability.t
-trace.log
-traceServer.log
-zeromq.vimentry

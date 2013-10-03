@@ -40,6 +40,24 @@ my $breakPoints = {}; #all the requested breakpoints
 my $effectiveBreakpoints = {}; #all the breakpoints effectively set, with their real line number
 my $lastBreakPointsUpdate = 0; #the last breakpoint list version that was propagate
 
+#=comment  updateProcessInfo
+#
+#    Update informations of the process into the process table
+#
+#     my $programInfo = { 
+#        pid          
+#        name         
+#        line         
+#        subroutine   
+#        package      
+#        filename     
+#        finished    
+#        stackTrace   
+#        variables    
+#        result       
+#
+#    };
+#=cut
 sub updateProcessInfo {
     my ($infos) = @_;
 
@@ -63,6 +81,12 @@ sub updateProcessInfo {
     return $pid;
 }
 
+#=method  setRunningProcessInfo
+#
+#C<setRunningProcessInfo($pid);>
+#update the process info when we send the 'continue' command because the process won't update its status until it id finished or it reached a breakpoint
+#
+#=cut
 
 sub setRunningProcessInfo {
     my ($pid) = @_;
@@ -89,6 +113,11 @@ sub setRunningProcessInfo {
     $processesInfos{$pid} = $programInfo;
 }
 
+#=method  getDebuggingInfos
+#
+#return a hash containg all debugging info + details for $pid
+#
+#=cut
 sub getDebuggingInfos {
     my ($pid) = @_;
     
@@ -187,6 +216,11 @@ sub checkProcessAlive(){
     $lastProcessCheck = [Time::HiRes::gettimeofday()];
 }
 
+#=method  propagateBreakPoints
+#
+#propagate new breakpoints to all processes; running processes are interrupted so they update their breakpoints.
+#
+#=cut
 sub propagateBreakPoints {
     if ($lastBreakPointsUpdate == $breakPointVersion){
         return;
@@ -269,6 +303,8 @@ while (1) {
 
 }
 
+1;
+
 __END__
 
 =pod
@@ -279,42 +315,39 @@ debugServer.pl - The server to centralize debugging informations
 
 =head1 VERSION
 
-version 0.007
+version 1.000
 
-=head2 updateProcessInfo
+=head1 synopsis
 
-    Update informations of the process into the process table
+	#on command-line
+	
+	#... first launch the debug server (only once)
+	
+	tom@house:debugserver.pl 
+	
+	server is started...
+	
+	#now launch your script(s) to debug 
+	
+	tom@house:debugagent.pl path/to/scripttodebug.pl #will automatically register to debug server
+	tom@house:debugagent.pl path/to/scripttodebug2.pl
 
-     my $programInfo = { 
-        pid          
-        name         
-        line         
-        subroutine   
-        package      
-        filename     
-        finished    
-        stackTrace   
-        variables    
-        result       
+...now you can send debug commands with the L<Devel::Debug::Server::Client>  module
 
-    };
+=head1 description
 
-=head2 setRunningProcessInfo
+This script launch the debug server which centralizes all debugging informations and commands for all processes. This server can be driven by a client process which uses L<Devel::Debug::Server::Client> to communicate.
 
-C<setRunningProcessInfo($pid);>
-update the process info when we send the 'continue' command because the process won't update its status until it id finished or it reached a breakpoint
+Breakpoints are set/unset for all processes.
+All command are asynchronous, which means you send a command to the server which will aknowledge you immediatly. You need to ask the server later to see the process state changed.
 
-=head2 getDebuggingInfos
+=head1 SEE ALSO
 
-return a hash containg all debugging info + details for $pid
-
-=head2 propagateBreakPoints
-
-propagate new breakpoints to all processes; running processes are interrupted so they update their breakpoints.
+See L<Devel::Debug::Server> for more informations.
 
 =head1 AUTHOR
 
-Jean-Christian HASSLER <hasslerjeanchristian@gmail.com>
+Jean-Christian HASSLER <hasslerjeanchristian at gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
